@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 
 
-char dir[12], folderPath[50], gachaRes[100], txtPath[100];
+char dir[40], folderPath[50], gachaRes[100], txtPath[100];
 char fileChar[50][50], fileWeap[135][50], nameChar[50][50], nameWeap[135][50], rarityChar[50][10], rarityWeap[135][10];
 int charCount = 0, weapCount = 0;
 int primo = 0, numgacha = 0;
@@ -62,7 +62,11 @@ void createDir(){
 		exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
   	}
     if(child_id == 0){
-		char *argv[] = {"mkdir", "gacha_gacha", dir, NULL};
+		char temp[50];
+		strcpy(temp, dir);
+		strcat(temp, dir);
+		strcat(temp, "gacha_gacha");
+		char *argv[] = {"mkdir", "-p", temp, NULL};
 		execv("/bin/mkdir", argv);
 	}
 	else{
@@ -290,52 +294,98 @@ void weapToTxt(int RNGweap){
 	}
 	else while(wait(&status) > 0);
 }
-
+void zipFile(){
+	char *argv[] = {"zip","-r","not_safe_for_wibu.zip","-P", "satuduatiga", "gacha_gacha", NULL};
+	execv("/bin/zip", argv); 
+}
+void deleteFile(){
+	char *argv[] = {"rm", "-r", "gacha_gacha", NULL};
+	execv("/bin/rm", argv);
+}
 int main(int argc, char* argv[]){
 
-	pid_t child_id;
+	clock_t begin = clock();
+	time_t seconds;
+	struct tm *timeStruct;
+	seconds = time(NULL);
+	// change localtime
+	timeStruct = localtime(&seconds);
+timeinfo->tm_mday,
+            timeinfo->tm_mon + 1, timeinfo->tm_year + 1900,
+            timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	while(true){
+		printf("%d %d %d %d:%d:%d\n", timeStruct->tm_mday,
+            timeStruct->tm_mon + 1, timeStruct->tm_year + 1900,
+            timeStruct->tm_hour, timeStruct->tm_min, timeStruct->tm_sec);
+		
+		if(timeStruct->tm_mday==30 && timeStruct->tm_mon + 1 == 3 && timeStruct->tm_hour == 4 && timeStruct->tm_min == 44){
 
-	strcpy(dir, "");
-	strcpy(dir, "/home/user");
-	// default
-	strcpy(folderPath, "");
-	int status;
-	child_id = fork();
-	if (child_id < 0) {
-        exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
-    }
-	if(child_id == 0){
-		createDir();
-	}
-	else{
-		while(wait(&status) > 0);
-		pid_t child_id2;
-		//status = NULL;
-		child_id2 = fork();
-		if (child_id2 < 0) {
-		exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
-		}
-		if(child_id2 == 0){
-			dataInit();
-		}
-		else{
-			while(wait(&status) > 0);
-			primo = 79000, numgacha = 0;
-			while(primo >= 160){
-				primo-=160;
-				resetResult();
-				if(numgacha % 90 == 0)changeFolder();
-				if(numgacha % 10 == 0)changeTxt();
-				numgacha++;
-				if(numgacha % 2){
-					charToTxt(rand() % charCount);
+			pid_t child_id;
+
+			strcpy(dir, "");
+			strcpy(dir, "/home/user");
+			// default
+			strcpy(folderPath, "");
+			int status;
+			child_id = fork();
+			if (child_id < 0) {
+				exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
+			}
+			if(child_id == 0){
+				createDir();
+			}
+			else{
+				while(wait(&status) > 0);
+				pid_t child_id2;
+				//status = NULL;
+				child_id2 = fork();
+				if (child_id2 < 0) {
+				exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
+				}
+				if(child_id2 == 0){
+					dataInit();
 				}
 				else{
-					weapToTxt(rand() % weapCount);
+					while(wait(&status) > 0);
+					primo = 79000, numgacha = 0;
+					while(primo >= 160){
+						primo-=160;
+						resetResult();
+						if(numgacha % 90 == 0)changeFolder();
+						if(numgacha % 10 == 0)changeTxt();
+						numgacha++;
+						if(numgacha % 2){
+							charToTxt(rand() % charCount);
+						}
+						else{
+							weapToTxt(rand() % weapCount);
+						}
+					}
+					// gacha done
 				}
 			}
-			// gacha done
+			clock_t end = clock();
+			if((end-begin)/CLOCKS_PER_SEC < 1800){
+				sleep(1800 - ((end-begin)/CLOCKS_PER_SEC));
+				printf("Wait %ld seconds", 1800 - ((end-begin)/CLOCKS_PER_SEC));
+			}
+			pid_t child_id3;
+			//status = NULL;
+			child_id3 = fork();
+			if (child_id3 < 0) {
+				exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
+			}
+			if(child_id3 == 0){
+				zipFile();
+			}
+			else{
+				while(wait(&status) > 0);
+				deleteFile();
+				break;
+			}
+			
 		}
+		
 	}
 	return 0;
 }

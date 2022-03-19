@@ -35,22 +35,39 @@ void tostring(int x){
 	out[len] = '\0';
 }
 void extractFile(){
+	
 	if(fork()==0){
-		char *argv[] = {"unzip", "char.zip", "-d", dir, NULL};
+		char temp[100];
+		strcpy(temp, dir);
+		strcat(temp, "/gacha_gacha");
+		
+		char *argv[] = {"unzip", "char.zip", "-d", temp, NULL};
 		execv("/bin/unzip", argv);
 	}
 	else{
-		char *argv2[] = {"unzip", "weap.zip", "-d", dir, NULL};
+		char temp[100];
+		strcpy(temp, dir);
+		strcat(temp, "/gacha_gacha");
+		
+		char *argv2[] = {"unzip", "weap.zip", "-d", temp, NULL};
 		execv("/bin/unzip", argv2);
 	}
 }
 void downloadFile(){
 	if(fork()==0){
-		char *argv[] = {"wget", "-P", dir, "-q", "drive.google.com/uc?export=download&id=1xYYmsslb-9s8-4BDvosym7R4EmPi6BHp", "-O", "char.zip"};
+		char temp[50];
+		strcpy(temp, dir);
+		//strcat(temp, "/gacha_gacha");
+		strcat(temp, "/char.zip");
+		char *argv[] = {"wget", "-q", "drive.google.com/uc?export=download&id=1xYYmsslb-9s8-4BDvosym7R4EmPi6BHp", "-O", temp};
 		execv("/bin/wget", argv);
 	}
 	else{
-		char *argv2[] = {"wget", "-P", dir, "-q", "drive.google.com/uc?export=download&id=1XSkAqqjkNmzZ0AdIZQt_eWGOZ0eJyNlT", "-O", "weap.zip"};
+		char temp[50];
+		strcpy(temp, dir);
+		//strcat(temp, "/gacha_gacha");
+		strcat(temp, "/weap.zip");
+		char *argv2[] = {"wget", "-q", "drive.google.com/uc?export=download&id=1XSkAqqjkNmzZ0AdIZQt_eWGOZ0eJyNlT", "-O", temp};
         execv("/bin/wget", argv2);
 	}
 }
@@ -64,8 +81,7 @@ void createDir(){
     if(child_id == 0){
 		char temp[50];
 		strcpy(temp, dir);
-		strcat(temp, dir);
-		strcat(temp, "gacha_gacha");
+		strcat(temp, "/gacha_gacha");
 		char *argv[] = {"mkdir", "-p", temp, NULL};
 		execv("/bin/mkdir", argv);
 	}
@@ -90,11 +106,15 @@ void saveFileName(){
 	if(fork()==0){
 		// char file names
 		DIR *d;
-		struct dirent *dir;
-		d = opendir("./characters/");
+		struct dirent *dirs;
+		char temp[100];
+		strcpy(temp, dir);
+		strcat(temp, "/gacha_gacha");
+		strcat(temp, "/characters");
+		d = opendir(temp);
 		if (d) {
-			while ((dir = readdir(d)) != NULL) {
-				strcpy(fileChar[charCount],dir->d_name);
+			while ((dirs = readdir(d)) != NULL) {
+				strcpy(fileChar[charCount],dirs->d_name);
 				charCount++;
 			}
 		closedir(d);
@@ -103,11 +123,15 @@ void saveFileName(){
 	else{
 		// weap file names
 		DIR *d;
-		struct dirent *dir;
-		d = opendir("./weapons");
+		struct dirent *dirs;
+		char temp[100];
+		strcpy(temp, dir);
+		strcat(temp, "/gacha_gacha");
+		strcat(temp, "/weapons");
+		d = opendir(temp);
 		if (d) {
-			while ((dir = readdir(d)) != NULL) {
-				strcpy(fileWeap[weapCount],dir->d_name);
+			while ((dirs = readdir(d)) != NULL) {
+				strcpy(fileWeap[weapCount],dirs->d_name);
 				weapCount++;
 			}
 		closedir(d);
@@ -169,6 +193,7 @@ void dataInit(){
 		saveFileName();
 	}
 	else{
+		while(wait(&status) > 0);
 		saveDataValues();
 	}
 }
@@ -203,7 +228,6 @@ void changeTxt(){
 	if(fork()==0){
 		strcpy(txtPath, "");
 		strcat(txtPath, folderPath);
-		
 		time_t seconds;
 		struct tm *timeStruct;
 		seconds = time(NULL);
@@ -239,10 +263,14 @@ void changeTxt(){
 		strcat(txtName, "_gacha_");
 		tostring(numgacha);
 		strcat(txtName, out);
-		
+		strcat(txtName, ".txt");
+		char buff[256];
 		strcat(txtPath, txtName);
-		char *argv[] = {"mkdir", "-p", txtPath, NULL};
-		execv("/bin/mkdir", argv);
+		//snprintf(buff, sizeof buff, "%s", txtPath);
+		FILE * fp;
+		fp = fopen (txtPath, "w+");
+		fprintf(fp, "%s\n", txtPath);
+		fclose(fp);
 	}
 	else {
 		while(wait(&status) > 0);
@@ -266,9 +294,9 @@ void charToTxt(int RNGchar){
 		strcat(charGet, out);
 		strcat(charGet, "\n");
 		
-		FILE *out=fopen(txtPath,"w+");
-		fputs(charGet,out);
-		fclose(out);
+        FILE *out=fopen(txtPath,"a+");
+		fprintf(out, "%s\n", charGet);
+        fclose(out);
 	}
 	else while(wait(&status) > 0);
 }
@@ -304,13 +332,15 @@ void deleteFile(){
 }
 int main(int argc, char* argv[]){
 
+
+
 	clock_t begin = clock();
 	time_t seconds;
 	struct tm *timeStruct;
 	seconds = time(NULL);
 	// change localtime
 	timeStruct = localtime(&seconds);
-timeinfo->tm_mday,
+	timeinfo->tm_mday,
             timeinfo->tm_mon + 1, timeinfo->tm_year + 1900,
             timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	while(true){
@@ -320,49 +350,52 @@ timeinfo->tm_mday,
 		
 		if(timeStruct->tm_mday==30 && timeStruct->tm_mon + 1 == 3 && timeStruct->tm_hour == 4 && timeStruct->tm_min == 44){
 
-			pid_t child_id;
 
-			strcpy(dir, "");
-			strcpy(dir, "/home/user");
-			// default
-			strcpy(folderPath, "");
-			int status;
-			child_id = fork();
-			if (child_id < 0) {
-				exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
-			}
-			if(child_id == 0){
-				createDir();
-			}
-			else{
-				while(wait(&status) > 0);
-				pid_t child_id2;
-				//status = NULL;
-				child_id2 = fork();
-				if (child_id2 < 0) {
-				exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
-				}
-				if(child_id2 == 0){
-					dataInit();
-				}
-				else{
-					while(wait(&status) > 0);
-					primo = 79000, numgacha = 0;
-					while(primo >= 160){
-						primo-=160;
-						resetResult();
-						if(numgacha % 90 == 0)changeFolder();
-						if(numgacha % 10 == 0)changeTxt();
-						numgacha++;
-						if(numgacha % 2){
-							charToTxt(rand() % charCount);
+
+
+					pid_t child_id;
+
+					strcpy(dir, "");
+					strcpy(dir, "/home/user");
+					// default
+					strcpy(folderPath, "");
+					int status;
+					child_id = fork();
+					if (child_id < 0) {
+						exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
+					}
+					if(child_id == 0){
+						createDir();
+					}
+					else{
+						while(wait(&status) > 0);
+						pid_t child_id2;
+						//status = NULL;
+						child_id2 = fork();
+						if (child_id2 < 0) {
+						exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
+						}
+						if(child_id2 == 0){
+							dataInit();
 						}
 						else{
-							weapToTxt(rand() % weapCount);
+							while(wait(&status) > 0);
+							primo = 79000, numgacha = 0;
+							while(primo >= 160){
+								primo-=160;
+								resetResult();
+								if(numgacha % 90 == 0)changeFolder();
+								if(numgacha % 10 == 0)changeTxt();
+								numgacha++;
+								if(numgacha % 2){
+									charToTxt(rand() % charCount);
+								}
+								else{
+									weapToTxt(rand() % weapCount);
+								}
+							}
+							// gacha done
 						}
-					}
-					// gacha done
-				}
 			}
 			clock_t end = clock();
 			if((end-begin)/CLOCKS_PER_SEC < 1800){
@@ -386,6 +419,5 @@ timeinfo->tm_mday,
 			
 		}
 		
-	}
 	return 0;
 }

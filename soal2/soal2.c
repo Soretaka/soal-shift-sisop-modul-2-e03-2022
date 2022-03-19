@@ -11,14 +11,6 @@ void buatdir(char *name){
     execv("/bin/mkdir",argv);
 }
 
-void buattxt (char *name){
-    printf("stuck");
-    char path[]="";
-    strcpy(path,name);
-    strcat(path,"/data.txt");
-    char *argv[] = {"touch",path,NULL};
-    execv("/bin/touch",argv);
-}
 
 int exists(const char *fname)
 {
@@ -74,7 +66,7 @@ void copyfile(char* namefile, char* genre,char *truenamefile,int indextruename, 
             exit(EXIT_FAILURE);
         }
         if(child_id==0){
-            printf("ini copyfile %s %s\n\n",namefile,genre);
+           // printf("ini copyfile %s %s\n\n",namefile,genre);
             char *argv[] = {"cp",namefile,genre,NULL };
             execv("/bin/cp",argv);
         }else{
@@ -101,7 +93,7 @@ void copyfile(char* namefile, char* genre,char *truenamefile,int indextruename, 
                 indextruename++;
                 truenamefile[indextruename]='g';
                 indextruename++;
-                printf("ini ganti nama %s %s genre: %s directory: %s\n\n", namefile,truenamefile,genre,buf);
+               // printf("ini ganti nama %s %s genre: %s directory: %s\n\n", namefile,truenamefile,genre,buf);
                 char *argv[] = {"mv",namefile,truenamefile,NULL};
                 execv("/bin/mv",argv);
             }
@@ -185,6 +177,143 @@ void openfolder(){
         }
     }    
 }
+void sort_data(){
+    if((chdir("/home/soreta/shift2/drakor"))<0){
+        exit(EXIT_FAILURE);
+    }else{
+        char allgenre[255][255]={""};
+        int indexgenre=0;
+        DIR *d;
+        struct dirent *dir;
+        d = opendir(".");
+        if (d) {
+            while ((dir = readdir(d))) {
+                int directory=1;
+                for(int i = 0 ; i < strlen(dir->d_name);i++){
+                    if(dir->d_name[i] == '.'){
+                        directory=0;
+                        break;
+                    }
+                }
+                if(directory){
+                //    printf("%s\n",dir->d_name);
+                    strcpy(allgenre[indexgenre],dir->d_name);
+                    indexgenre++;
+                }
+            }
+        closedir(d);
+        }
+       char *buf;
+       buf=(char *)malloc(100*sizeof(char));
+       getcwd(buf,100);
+        for(int i = 0 ; i < indexgenre ; i++){
+            char allnama[255][255];
+            int alltahun[255];
+ //           char alltahun[255][255];
+            int indexitem=0;
+            memset(allnama,0,sizeof(allnama));
+            memset(alltahun,0,sizeof(alltahun));
+            int indexline=1;
+            char *path;
+            path=(char *)malloc(255*sizeof(char));
+            memset(path,0,sizeof(path));
+            strcpy(path,buf);
+            strcat(path,"/");
+             strcat(path,allgenre[i]);
+             strcat(path,"/data.txt");
+             printf("%s\n",allgenre[i]);
+            //printf("%s\n",path);
+            FILE* fp;
+            char * line=NULL;
+            size_t len=0;
+            ssize_t read;
+            fp=fopen(path,"r");
+            if(fp==NULL)exit(EXIT_FAILURE);
+            while((read=getline(&line,&len,fp))!= -1){
+                if(indexline==1) {
+                    indexline++;
+                    continue;
+                }
+           //     printf("Retrieved line of length %zu:\n", read);
+                char* nama;
+                nama = (char *)malloc(255*sizeof(char));
+                char* tahun;
+                tahun = (char *)malloc(255*sizeof(char));
+                printf("%s\n", line);
+                memset(nama,0,sizeof(nama));
+                memset(tahun,0,sizeof(tahun));
+                if(indexline%3==0){
+                    int idx=0;
+                    for(int j = 7 ; j < strlen(line);j++){
+                        strncat(nama,&line[j],1);
+                    }
+                 //   printf("actual: %s\n",line);
+                //    printf("nama : %s\n",nama);
+                    strcpy(allnama[indexitem],nama);
+                    memset(nama,0,sizeof(nama));
+                   printf("%s\n",allnama[indexitem]);
+                }
+                if(indexline%3==1){
+                    int idx=0;
+                    for(int j = 14 ; j < strlen(line);j++){
+                        strncat(tahun,&line[j],1);
+                    }
+                    int tahunInt=0;
+                    for(int z=0 ; z <strlen(tahun)-1;z++){
+                        int pengali=1;
+                        for(int m=0; m< strlen(tahun)-2-z;m++){
+                            pengali*=10;
+                        }
+                       // printf("%d ",tahun[z]-'0');
+                        tahunInt+=(tahun[z]-'0')*pengali;
+                    }
+                 //   strcpy(alltahun[indexitem],tahun);
+                 //   memset(tahun,0,sizeof(tahun));
+                    alltahun[indexitem]=tahunInt;
+                    printf("%d\n",alltahun[indexitem]);
+                    indexitem++;
+                }
+                indexline++;
+           }
+            fclose(fp);
+            // for(int j = 0 ; j < indexitem;j++){
+            // printf("%s\n",allnama[j]);
+            // }   
+            if (line) free(line);
+
+            for(int i = 0 ; i < indexitem;i++){
+                for(int j = 0 ; j < indexitem-i-1; j++){
+                    if(alltahun[j] > alltahun[j+1]){
+                        int tmp = alltahun[j];
+                        alltahun[j] = alltahun[j+1];
+                        alltahun[j+1]=tmp;
+                        char* namatmp;
+                        namatmp=(char *)malloc(255*sizeof(char));
+                        strcpy(namatmp,allnama[j]);
+                        memset(allnama[j],0,sizeof(allnama[j]));
+                        strcpy(allnama[j],allnama[j+1]);
+                        memset(allnama[j+1],0,sizeof(allnama[j+1]));
+                        strcpy(allnama[j+1],namatmp);
+                    }
+                }
+            }
+            for(int i = 0 ; i < indexitem ; i++){
+                printf("nama: %s\ntahun: %d\n",allnama[i],alltahun[i]);
+            }
+            fp = fopen(path,"w");
+            fprintf(fp,"kategori: %s\n\n",allgenre[i]);
+            fclose(fp);
+            fp=fopen(path,"a");
+            for(int i = 0 ; i < indexitem;i++){
+                fprintf(fp,"nama : %s",allnama[i]);
+                fprintf(fp,"rilis : tahun %d\n\n", alltahun[i]);
+            }
+            fclose(fp);
+        } //akhir dari looping per genre
+        // printf("%s\n",buf);
+        
+    }
+}
 int main(){
     pid_t child_id;
     int status;
@@ -196,6 +325,15 @@ int main(){
         unzip();
     }else{
         while(wait(&status)>0);
-        openfolder();
+        child_id=fork();
+        if(child_id<0){
+            exit(EXIT_FAILURE);
+        }
+        if(child_id==0){
+           openfolder();
+        }else{
+            while(wait(&status)>0);
+            sort_data();
+        }
     }
 }

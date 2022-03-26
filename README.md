@@ -451,9 +451,9 @@ Beberapa diantaranya adalah program baru akan dijalankan pada tanggal anniversar
 
 
 ## Soal no 3  
-###Conan adalah seorang detektif terkenal. Suatu hari, Conan menerima beberapa laporan tentang hewan di kebun binatang yang tiba-tiba hilang. Karena jenis-jenis hewan yang hilang banyak, maka perlu melakukan klasifikasi hewan apa saja yang hilang.  
-
-**a) membuat program untuk membuat 2 directory di “/home/[USER]/modul2/” dengan nama “darat” lalu 3 detik kemudian membuat directory ke 2 dengan nama “air”**  
+### Conan adalah seorang detektif terkenal. Suatu hari, Conan menerima beberapa laporan tentang hewan di kebun binatang yang tiba-tiba hilang. Karena jenis-jenis hewan yang hilang banyak, maka perlu melakukan klasifikasi hewan apa saja yang hilang.  
+  
+**a) membuat program untuk membuat 2 directory di `/home/[USER]/modul2/` dengan nama “darat” lalu 3 detik kemudian membuat directory ke 2 dengan nama “air”**  
   
 ```c
 void darat(){
@@ -502,8 +502,8 @@ void kedua(){ // extract animal.zip
 ```  
 Kemudian, kita diperlukan untuk melakukan ekstrak file `animal.zip` di directory yang sama dengan folder darat dan air yang telah kita buat.  
   
-c) Hasil extract dipisah menjadi hewan darat dan hewan air sesuai dengan nama filenya. Untuk hewan darat dimasukkan ke folder`/home/[USER]/modul2/darat` dan untuk hewan air dimasukkan ke folder`/home/[USER]/modul2/air`. Untuk hewan yang tidak ada keterangan air atau darat harus dihapus.  
-
+**c) Hasil extract dipisah menjadi hewan darat dan hewan air sesuai dengan nama filenya. Untuk hewan darat dimasukkan ke folder `/home/[USER]/modul2/darat` dan untuk hewan air dimasukkan ke folder `/home/[USER]/modul2/air`. Untuk hewan yang tidak ada keterangan air atau darat harus dihapus.**  
+  
 ```c
 int move_file(char *file_name, char *target_dir) {
         int ch;
@@ -591,7 +591,7 @@ int ketiga() // separate air and darat
 Pada kode diatas, kita akan menggunakan **directory listing** untuk melakukan iterasi file yang ada di directory tersebut. Kemudian jika ditemukan pola kalimat **darat** maupun **air** , file tersebut akan dipindahkan ke **folder darat atau air** yang telah dibuat tadi. Jika file tersebut tidak mengandung kata **darat** maupun **air**, maka file tersebut akan dihapus.  
 
 **d) Menghapus semua burung yang ada di directory “/home/[USER]/modul2/darat”**  
-
+  
 ```c
 void keempat() // remove bird
 	{
@@ -618,9 +618,9 @@ void keempat() // remove bird
     }
 ```  
 Seperti kode sebelumnya, kode diatas melakukan iterasi file di **folder darat** untuk mencari file yang mengandung kata **bird** yang nantinya file tersebut akan dihapus.  
-
+  
 **e) Membuat list nama semua hewan yang ada di directory “/home/[USER]/modul2/air” ke “list.txt” dengan format UID_[UID file permission]_Nama File.[jpg/png]**  
-
+  
 ```c
 void check_permission(char *filename, char *nama_file, FILE* fptr)
 {
@@ -687,10 +687,10 @@ void kelima() // create list.txt in the air folder
     }
 }
 ```  
-Pada kode diatas akan dilakukan iterasi kepada seluruh file di folder bird untuk menentukan format penamaan berdasarkan `UID` yang dapat berupa `r` , `w`, maupun `x` yang dieksekusi di fungsi `check_permission`. Selain itu juga perlu didapatkan nama user dan nama file tersebut.. 
-
+Pada kode diatas akan dilakukan iterasi kepada seluruh file di folder bird untuk menentukan format penamaan berdasarkan `UID` yang dapat berupa `r` , `w`, maupun `x` yang dieksekusi di fungsi `check_permission`. Selain itu juga perlu didapatkan nama user dan nama file tersebut.  
+  
 Berdasarkan uraian kode diatas, dihasilkan kode utuh seperti berikut.  
-
+  
 ```c
 #include <stdlib.h>
 #include <sys/types.h>
@@ -998,6 +998,6 @@ int main(){
   return 0;
 }
 ```
-
-###Kendala
+  
+### Kendala  
 Tidak ada.  

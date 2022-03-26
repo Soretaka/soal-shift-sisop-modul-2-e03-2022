@@ -332,7 +332,7 @@ void deleteFile(){
 }
 int main(int argc, char* argv[]){
 
-	clock_t begin = clock();
+	
 	time_t seconds;
 	struct tm *timeStruct;
 	seconds = time(NULL);
@@ -365,6 +365,7 @@ int main(int argc, char* argv[]){
 		while(wait(&status) > 0);
 		dataInit();
 		primo = 79000, numgacha = 0;
+		clock_t begin = clock();
 		while(primo >= 160){
 			printf("Current primo: %d\n", primo);
 			primo-=160;

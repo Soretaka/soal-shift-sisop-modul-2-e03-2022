@@ -447,3 +447,50 @@ Beberapa diantaranya adalah program baru akan dijalankan pada tanggal anniversar
 - fopen tidak perlu menggunakan fork
 - isi .json terlalu besar sehingga buffer awal yang digunakan tidak cukup
 - file harus diextract satu per satu karena jika tidak akan error
+
+
+
+## Soal no 3  
+Conan adalah seorang detektif terkenal. Suatu hari, Conan menerima beberapa laporan tentang hewan di kebun binatang yang tiba-tiba hilang. Karena jenis-jenis hewan yang hilang banyak, maka perlu melakukan klasifikasi hewan apa saja yang hilang.  
+
+a) membuat program untuk membuat 2 directory di “/home/[USER]/modul2/” dengan nama “darat” lalu 3 detik kemudian membuat directory ke 2 dengan nama “air”  
+  
+```
+void darat(){
+    char *argv[] = {"mkdir", "-p", "/home/daniel/modul2/darat", NULL};
+    execv("/bin/mkdir", argv);
+}
+
+void air(){
+    char *argv1[] = {"mkdir", "/home/daniel/modul2/air", NULL};
+    execv("/bin/mkdir", argv1);
+}
+
+void pertama() { // create air and darat folder
+
+  pid_t child_id;
+  int status;
+   
+  child_id = fork();
+
+  if (child_id < 0) {
+    exit(EXIT_FAILURE);
+  }
+
+  if (child_id == 0) {
+    // this is child
+    darat();
+  }
+  else {
+    // this is parent
+    while ((wait(&status)) > 0);
+    sleep(3);
+    air();
+  }
+}
+```  
+Kode diatas menggunakan fork untuk mengeksekusi pembuatan folder darat terlebih dahulu disusul dengan delay 3 detik yang kemudian akan menciptakan folder air. 
+
+
+
+

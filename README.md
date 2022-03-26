@@ -5,10 +5,10 @@ Anggota:
 2. Florentino Benedictus (5025201222)
 3. Anak Agung Yatestha Parwata (5025201234)
 
-## Soal No. 3
+## Soal No. 1
 Dalam soal ini, kita diminta membuat program dalam 1 file `soal1.c` yang akan menjalankan beberapa fungsi.
 
-### 2A
+### 1A
 ```c
 void extractFile(){
 	int status;
@@ -84,7 +84,7 @@ void createDir(){
 ```
 Pertama program akan menjalankan fungsi `createDir()`, lalu dengan menggunakan fork dan exec akan membuat directory `gacha_gacha` di path /home/user. Kemudian setelah directory tersebut dibuat, program akan melakukan fork lagi sehingga child akan menjalankan `downloadFile()` yang akan mendownload kedua file .zip dan parentnya akan menjalankan `extractFile()` yang melakukan extract kedua file .zip ke dalam folder `gacha_gacha`
 
-### 2B, 2C, 2D
+### 1B, 1C, 1D
 ```c
 void saveFileName(){
 		// char file names
@@ -345,7 +345,7 @@ void tostring(int x){
 
 Selain itu, diperlukan adanya fungsi tambahan `tostring` yang berfungsi mengubah integer menjadi string, karena beberapa data seperti jumlah gacha dan primogems bertipe integer tetapi diperlukan dalam penamaan file dan folder.
 
-### 2E
+### 1E
 Terdapat kriteria tambahan yaitu gacha hanya akan dimulai pada anniversary yaitu 30 Maret jam 04:44 dan 3 jam setelah gacha dimulai semua isi di folder `gacha_gacha` akan di zip dengan nama `not_safe_for_wibu` dan dipassword `satuduatiga` lalu folder `gacha_gacha` akan didelete, sehingga untuk menyelesaikan 2E akan ditambahkan beberapa hal di luar fungsi utama gacha di `main()`
 ```c
 void zipFile(){
@@ -442,3 +442,8 @@ int main(int argc, char* argv[]){
 }
 ```
 Beberapa diantaranya adalah program baru akan dijalankan pada tanggal anniversary dan selama belum maka program akan melakukan looping yang akan menunggu tanggal anniversary. Selanjutnya, ketika proses gacha dimulai timer `begin` akan mencatat waktu mulai dan ketika gacha selesai timer `end` akan mencatat waktu selesai sehingga ketika selisih begin dan end belum mencapai 3 jam maka program akan sleep sejumlah waktu yang kurang. Lalu setelah lewat 3 jam program akan menjalankan `zipFile()` yang akan melakukan zip pada folder `gacha_gacha` dengan nama .zip `not_safe_for_wibu` dan password `satuduatiga`. Selanjutnya akan dijalankan `deleteFile()` yang akan menghapus folder `gacha_gacha` dan isinya.
+
+### Revisi
+- fopen tidak perlu menggunakan fork
+- isi .json terlalu besar sehingga buffer awal yang digunakan tidak cukup
+- file harus diextract satu per satu karena jika tidak akan error
